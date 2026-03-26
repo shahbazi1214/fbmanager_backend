@@ -55,6 +55,7 @@ class FacebookAccount(models.Model):
     profile_id = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
     recovery_email = models.EmailField(blank=True)
+    recovery_email_password = models.CharField(max_length=500, blank=True)
     proxy = models.CharField(max_length=200, blank=True, help_text='Proxy IP:PORT')
     user_agent = models.TextField(blank=True)
     cookies = models.TextField(blank=True, help_text='Account cookies JSON')

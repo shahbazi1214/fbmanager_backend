@@ -88,6 +88,11 @@ class FacebookAccountDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = FacebookAccountCreateSerializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
+        # Strip empty password/recovery_email_password so they don't overwrite existing values
+        if not serializer.validated_data.get('password'):
+            serializer.validated_data.pop('password', None)
+        if not serializer.validated_data.get('recovery_email_password'):
+            serializer.validated_data.pop('recovery_email_password', None)
         account = serializer.save()
         AccountActivity.objects.create(
             account=account,
@@ -226,9 +231,18 @@ class PageDailyStatsListView(generics.ListCreateAPIView):
         stats = serializer.save()
 
         page = stats.page
+        update_fields = []
         if stats.followers_count > 0:
             page.followers_count = stats.followers_count
-            page.save(update_fields=['followers_count'])
+            update_fields.append('followers_count')
+        if stats.new_posts > 0:
+            page.total_posts = page.total_posts + stats.new_posts
+            update_fields.append('total_posts')
+        if stats.new_reels > 0:
+            page.total_reels = page.total_reels + stats.new_reels
+            update_fields.append('total_reels')
+        if update_fields:
+            page.save(update_fields=update_fields)
 
         AccountActivity.objects.create(
             account=page.account,

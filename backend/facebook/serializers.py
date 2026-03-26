@@ -70,7 +70,8 @@ class FacebookAccountListSerializer(serializers.ModelSerializer):
         model = FacebookAccount
         fields = [
             'id', 'owner', 'owner_name', 'name', 'email', 'profile_url',
-            'profile_id', 'status', 'pages_count', 'active_pages_count',
+            'profile_id', 'phone_number', 'date_of_birth', 'proxy',
+            'recovery_email', 'status', 'pages_count', 'active_pages_count',
             'last_login', 'created_at', 'updated_at', 'notes', 'assigned_managers'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
@@ -93,7 +94,14 @@ class FacebookAccountDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FacebookAccount
-        fields = '__all__'
+        fields = [
+            'id', 'owner', 'owner_name', 'name', 'email', 'two_fa_code',
+            'date_of_birth', 'profile_url', 'profile_id', 'phone_number',
+            'recovery_email', 'proxy', 'user_agent', 'cookies', 'status',
+            'notes', 'last_login', 'pages_count', 'active_pages_count',
+            'pages', 'recent_activities', 'assigned_managers',
+            'created_at', 'updated_at'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_recent_activities(self, obj):
@@ -109,7 +117,16 @@ class FacebookAccountDetailSerializer(serializers.ModelSerializer):
 
 
 class FacebookAccountCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    recovery_email_password = serializers.CharField(max_length=500, required=False, allow_blank=True)
+
     class Meta:
         model = FacebookAccount
-        fields = '__all__'
+        fields = [
+            'id', 'owner', 'name', 'email', 'password', 'two_fa_code',
+            'date_of_birth', 'profile_url', 'profile_id', 'phone_number',
+            'recovery_email', 'recovery_email_password', 'proxy',
+            'user_agent', 'cookies', 'status', 'notes', 'last_login',
+            'created_at', 'updated_at'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at']
